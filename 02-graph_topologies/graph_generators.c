@@ -1,6 +1,7 @@
 #include "../01-graph/graph.h"
 #include <stdlib.h>
 #include <time.h>
+#include "../11-helpers/get_urandom.h"  // Add this include
 
 // Helper: get degree of node (out-degree for directed)
 static int get_degree(graph* g, int node) {
@@ -26,7 +27,7 @@ graph* generate_erdos_renyi(int n, float p, int is_directed) {
 
     for (int u = 0; u < n; u++) {
         for (int v = is_directed ? 0 : u + 1; v < n; v++) {
-            if (u != v && ((float)rand() / RAND_MAX) < p) {
+            if (u != v && get_urandom(0.0f, 1.0f) < p) {
                 add_edge(g, u, v, 1.0f);
                 if (!is_directed) add_edge(g, v, u, 1.0f);
             }
@@ -56,7 +57,7 @@ graph* generate_small_world(int n, int k, float beta, int is_directed) {
     for (int u = 0; u < n; u++) {
         for (int i = 1; i <= half_k; i++) {
             int v = (u + i) % n;
-            if (is_connected(g, u, v) && ((float)rand() / RAND_MAX) < beta) {
+            if (is_connected(g, u, v) && get_urandom(0.0f, 1.0f) < beta) {
                 // Remove original edge
                 g->edges[u * n + v] = 0;
                 g->edge_weights[u * n + v] = 0.0f;
@@ -68,7 +69,7 @@ graph* generate_small_world(int n, int k, float beta, int is_directed) {
                 // Find new random connection
                 int new_v;
                 do {
-                    new_v = rand() % n;
+                    new_v = (int)get_urandom(0, (float)n);
                 } while (new_v == u || is_connected(g, u, new_v));
 
                 add_edge(g, u, new_v, 1.0f);
@@ -110,7 +111,7 @@ graph* generate_scale_free(int n, int m, int is_directed) {
 
         int count = 0;
         while (count < m) {
-            int r = rand() % total_degree;
+            int r = (int)get_urandom(0, (float)total_degree);
             int sum = 0;
             int selected = -1;
             for (int i = 0; i < new_node; i++) {

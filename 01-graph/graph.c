@@ -62,7 +62,7 @@ graph* read_graph(char* filename){
     int u,v;
     float weight;
     while (fscanf(file, " (%d,%d,%f) ", &u, &v, &weight) == 3) {
-        printf("Read tuple: (%d, %d, %f)\n", u, v, weight);
+        //printf("Read tuple: (%d, %d, %f)\n", u, v, weight);
         add_edge(g,u,v,weight);
     }
     fclose(file);

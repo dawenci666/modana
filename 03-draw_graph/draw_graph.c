@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <cairo/cairo.h>
+#include "../11-helpers/get_urandom.h"
 
 // --------- Layout Utilities -----------
 
@@ -35,8 +36,10 @@ int assign_random_layout(VisNode *nodes, int n)
         double x, y;
 
         do {
-            x = rand() % (WIDTH - 2 * NODE_RADIUS) + NODE_RADIUS;
-            y = rand() % (HEIGHT - 2 * NODE_RADIUS) + NODE_RADIUS;
+            // Use get_urandom to generate random positions within bounds
+            x = (int)get_urandom(NODE_RADIUS, WIDTH - NODE_RADIUS);
+            y = (int)get_urandom(NODE_RADIUS, HEIGHT - NODE_RADIUS);
+
             attempts++;
             if (attempts > MAX_PLACEMENT_ATTEMPTS)
                 return 0;
@@ -47,6 +50,7 @@ int assign_random_layout(VisNode *nodes, int n)
     }
     return 1;
 }
+
 
 int save_layout_to_path(const char *path, VisNode *layout, size_t n)
 {
@@ -146,7 +150,7 @@ void save_graph_as_image(graph *g, RGBColor *colors, const char *filename, char 
 
     // Draw edges (undirected assumed)
     cairo_set_line_width(cr, 2);
-    cairo_set_source_rgb(cr, 0.7, 0.7, 0.7);
+    cairo_set_source_rgb(cr, 0, 0, 0);
 
     size_t i, j;
     for (i = 0; i < n; i++) {
@@ -180,8 +184,13 @@ void save_graph_as_image(graph *g, RGBColor *colors, const char *filename, char 
             cairo_set_source_rgb(cr, 0, 0, 0);
             cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
             cairo_set_font_size(cr, 12);
-            cairo_move_to(cr, layout[i].x + NODE_RADIUS + 2, layout[i].y + 4); // Approx vertical centering
-            cairo_show_text(cr, labels[i]);
+            cairo_text_extents_t extents;
+cairo_text_extents(cr, labels[i], &extents);
+double text_x = layout[i].x - extents.width / 2 - extents.x_bearing;
+double text_y = layout[i].y - extents.height / 2 - extents.y_bearing;
+
+cairo_move_to(cr, text_x, text_y);
+cairo_show_text(cr, labels[i]);
         }
     }
 

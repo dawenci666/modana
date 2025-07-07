@@ -1,5 +1,5 @@
 #include "social_impact_model.h"
-
+#include "../11-helpers/get_urandom.h"
 typedef struct {
     float alpha;
     float beta;
@@ -27,12 +27,9 @@ void social_impact_async_mult_update(opinion_model* model)
     size_t n = model->network->num_nodes;
     social_impact_params* params = (social_impact_params*)model->params;
     float beta = params->beta;
-
-    for (size_t i = 0; i < n; ++i) {
-        float old_opinion = opinions[i];
-        float impact = mult_impact_i(i, params, opinions, n);
-        opinions[i] = tanhf(old_opinion * beta * impact);
-    }
+    size_t i = (size_t)get_urandom(0.0f, (float)n);
+    float impact = mult_impact_i(i, params, opinions, n);
+    opinions[i] = tanhf(opinions[i] * beta * impact);
 }
 
 opinion_model* create_si_async_mult_model(graph* topology,

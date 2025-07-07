@@ -62,7 +62,7 @@ int run_simulation(opinion_model *model, size_t max_steps, float convergence_thr
     size_t n = model->network->num_nodes;
     void *opinions = model->opinion_space->opinions;
     size_t esize = model->opinion_space->element_size;
-
+    int current_step = 0;
     for (size_t step = 0; step < max_steps; step++) {
         model->update(model);
 
@@ -82,9 +82,9 @@ int run_simulation(opinion_model *model, size_t max_steps, float convergence_thr
         printf("Step %zu: ", step);
         for (size_t i = 0; i < n; i++) {
             float *op = (float *)((char *)opinions + i * esize);
-            printf("%.3f ", *op);
+            printf("%.6f ", *op);
         }
-        printf("\nΔ = %.3f\n", diff);
+        printf("\nΔ = %.6f\n", diff);
 
         write_current_state(model, step, directoryname);
 
@@ -92,9 +92,7 @@ int run_simulation(opinion_model *model, size_t max_steps, float convergence_thr
             printf("Converged after %zu steps (Δ = %.6f).\n", step, diff);
             break;
         }
+        current_step = step;
     }
-
-    // Removed image and video generation
-
-    return 0;
+    return current_step;
 }

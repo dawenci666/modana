@@ -88,19 +88,18 @@ void generate_video_from_images(const char *directoryname, const char *video_fil
         goto cleanup;
     }
 
+    // ✅ FIXED: Write relative paths (relative to the directory that holds images)
     for (int i = 0; i < count; i++) {
-        char full_path[PATH_MAX];
-        snprintf(full_path, sizeof(full_path), "%s/%s", images_path, filenames[i]);
-        fprintf(f, "file '%s'\n", full_path);
+        fprintf(f, "file 'images/%s'\n", filenames[i]);  // Use relative paths
         free(filenames[i]);
     }
     fclose(f);
 
     // Construct and run ffmpeg command
     char cmd[4 * PATH_MAX];
-    snprintf(cmd, sizeof(cmd),
-             "ffmpeg -y -r %d -f concat -safe 0 -i \"%s\" -c:v libx264 -pix_fmt yuv420p \"%s\"",
-             fps, list_file, full_output_path);
+snprintf(cmd, sizeof(cmd),
+         "ffmpeg -y -r %d -f concat -safe 0 -i \"%s\" -vf \"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2\" -c:v libx264 -pix_fmt yuv420p \"%s\"",
+         fps, list_file, full_output_path);
 
     printf("Running: %s\n", cmd);
     int result = system(cmd);

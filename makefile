@@ -32,13 +32,14 @@ SRC = \
     08-opinion_models/social_impact_model.c \
     09-abstract_opinion_model_simulation/abstract_opinion_model_simulation.c \
     10_gen_video_from_images/gen_video_from_images.c \
-    11-helpers/create_dir_with_curr_timestamp.c
+    11-helpers/create_dir_with_curr_timestamp.c \
+    11-helpers/get_urandom.c
 
 # Object and dependency files (with directory structure)
 OBJ = $(patsubst %.c,build/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 
-# Target
+# Target executable name
 TARGET = main
 
 .PHONY: all clean tree
@@ -49,18 +50,18 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $@
 
-# Compile .c to .o in build/
+# Compile .c files into .o files inside build/
 build/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean everything
+# Clean build artifacts
 clean:
 	rm -rf build $(TARGET)
 
-# Print file tree (limit to 3 levels)
+# Display directory tree (up to 3 levels)
 tree:
 	tree -a -L 3
 
-# Include auto-generated dependency files
+# Include dependency files for automatic rebuilds
 -include $(DEP)

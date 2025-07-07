@@ -1,0 +1,6 @@
+build/
+simls_raw_data/
+*.o
+*.opinions
+*.graph
+main

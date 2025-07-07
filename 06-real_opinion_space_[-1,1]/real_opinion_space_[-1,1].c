@@ -1,9 +1,8 @@
 #include "real_opinion_space_[-1,1].h"
+#include "11-helpers/get_urandom.h"
 
-// Generate uniform float in [-1, 1]
-static float rand_uniform_minus1_to_1() {
-    srand(time(NULL));
-    return ((float)rand() / RAND_MAX) * 2.0f - 1.0f;
+float rand_uniform_minus1_to_1() {
+    return get_urandom(-1.0f, 1.0f);
 }
 
 opinion_space* create_opinions_in_real_ball_of_radius_one(size_t num_agents) {

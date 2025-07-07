@@ -10,9 +10,9 @@
 #include <cairo.h>
 #include "../01-graph/graph.h"
 
-#define WIDTH 800
-#define HEIGHT 800
-#define NODE_RADIUS 15
+#define WIDTH 1920
+#define HEIGHT 1080
+#define NODE_RADIUS 30
 #define MAX_PLACEMENT_ATTEMPTS 1000
 
 // RGB color struct
