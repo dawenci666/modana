@@ -1,0 +1,34 @@
+graph G {
+    splines=true;
+    overlap=false;
+    sep="1.0";
+    edge [minlen=2, constraint=false];
+    0 [label="0.90", style=filled, fillcolor="#e60019", width=0.55, height=0.55, fixedsize=true, shape=circle];
+    1 [label="0.47", style=filled, fillcolor="#780087", width=0.50, height=0.50, fixedsize=true, shape=circle];
+    2 [label="0.06", style=filled, fillcolor="#1000ef", width=0.45, height=0.45, fixedsize=true, shape=circle];
+    3 [label="0.06", style=filled, fillcolor="#0e00f1", width=0.55, height=0.55, fixedsize=true, shape=circle];
+    4 [label="0.46", style=filled, fillcolor="#74008b", width=0.40, height=0.40, fixedsize=true, shape=circle];
+    5 [label="0.90", style=filled, fillcolor="#e4001b", width=0.60, height=0.60, fixedsize=true, shape=circle];
+    6 [label="0.97", style=filled, fillcolor="#f70008", width=0.45, height=0.45, fixedsize=true, shape=circle];
+    7 [label="0.61", style=filled, fillcolor="#9b0064", width=0.40, height=0.40, fixedsize=true, shape=circle];
+    8 [label="0.15", style=filled, fillcolor="#2600d9", width=0.45, height=0.45, fixedsize=true, shape=circle];
+    9 [label="0.01", style=filled, fillcolor="#0200fd", width=0.45, height=0.45, fixedsize=true, shape=circle];
+    0 -- 3 [weight=0.85, color="#002700", fontcolor="#002700", label="0.85"];
+    0 -- 4 [weight=0.45, color="#008d00", fontcolor="#008d00", label="0.45"];
+    0 -- 5 [weight=0.01, color="#00fc00", fontcolor="#00fc00", label="0.01"];
+    0 -- 7 [weight=0.29, color="#00b400", fontcolor="#00b400", label="0.29"];
+    0 -- 8 [weight=0.75, color="#003e00", fontcolor="#003e00", label="0.75"];
+    1 -- 3 [weight=0.41, color="#009500", fontcolor="#009500", label="0.41"];
+    1 -- 4 [weight=0.01, color="#00fb00", fontcolor="#00fb00", label="0.01"];
+    1 -- 5 [weight=0.43, color="#009200", fontcolor="#009200", label="0.43"];
+    1 -- 9 [weight=0.46, color="#008900", fontcolor="#008900", label="0.46"];
+    2 -- 5 [weight=0.83, color="#002a00", fontcolor="#002a00", label="0.83"];
+    2 -- 8 [weight=0.09, color="#00e900", fontcolor="#00e900", label="0.09"];
+    2 -- 9 [weight=0.05, color="#00f100", fontcolor="#00f100", label="0.05"];
+    3 -- 5 [weight=0.84, color="#002900", fontcolor="#002900", label="0.84"];
+    3 -- 6 [weight=0.91, color="#001600", fontcolor="#001600", label="0.91"];
+    3 -- 7 [weight=0.55, color="#007100", fontcolor="#007100", label="0.55"];
+    5 -- 6 [weight=0.07, color="#00ec00", fontcolor="#00ec00", label="0.07"];
+    5 -- 8 [weight=0.75, color="#004000", fontcolor="#004000", label="0.75"];
+    6 -- 9 [weight=0.96, color="#000a00", fontcolor="#000a00", label="0.96"];
+}

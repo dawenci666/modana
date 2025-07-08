@@ -4,39 +4,43 @@
 #include <stdio.h>
 #include<math.h>
 #define INF 1e9f
+#define DIST(i,j) dist[(i)*n + (j)]
 
 float* compute_all_pairs_distances(graph* g) {
     int n = g->num_nodes;
     float* dist = malloc(n * n * sizeof(float));
     if (!dist) return NULL;
 
-    // Initialize distances:
+    #define DIST(i,j) dist[(i)*n + (j)]
+
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i == j) {
-                dist[i * n + j] = 0.0f;
+                DIST(i,j) = 0.0f;
             } else if (g->edges[i * n + j] == 1) {
-                dist[i * n + j] = g->edge_weights[i*n+j];
+                DIST(i,j) = g->edge_weights[i * n + j];
             } else {
-                dist[i * n + j] = INF;
+                DIST(i,j) = INF;
             }
         }
     }
 
-    // Floyd-Warshall Algorithm
     for (int k = 0; k < n; k++) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                float alt = dist[i * n + k] + dist[k * n + j];
-                if (alt < dist[i * n + j]) {
-                    dist[i * n + j] = alt;
+                if (DIST(i,k) < INF && DIST(k,j) < INF) {
+                    float alt = DIST(i,k) + DIST(k,j);
+                    if (alt < DIST(i,j)) {
+                        DIST(i,j) = alt;
+                    }
                 }
             }
         }
     }
 
-    return dist; // Caller must free!
+    return dist;
 }
+
 
 
 graph* create_graph(int n, int is_directed) {

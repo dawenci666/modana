@@ -32,7 +32,7 @@ void write_current_state(opinion_model *model, size_t current_step, const char *
     save_graph(model->network, filepath);
 }
 
-int run_simulation(opinion_model *model, size_t max_steps, float convergence_threshold, const char* directoryname)
+int run_simulation(opinion_model *model, size_t max_steps, float convergence_threshold, const char* directoryname, int save_data)
 {
     if (!model) {
         fprintf(stderr, "model is NULL\n");
@@ -79,17 +79,17 @@ int run_simulation(opinion_model *model, size_t max_steps, float convergence_thr
 
         float diff = max_opinion - min_opinion;
 
-        printf("Step %zu: ", step);
+        /*printf("Step %zu: ", step);
         for (size_t i = 0; i < n; i++) {
             float *op = (float *)((char *)opinions + i * esize);
             printf("%.6f ", *op);
         }
-        printf("\nΔ = %.6f\n", diff);
+        printf("\nΔ = %.6f\n", diff);*/
 
-        write_current_state(model, step, directoryname);
+        if(save_data) write_current_state(model, step, directoryname);
 
         if (diff < convergence_threshold) {
-            printf("Converged after %zu steps (Δ = %.6f).\n", step, diff);
+            //printf("Converged after %zu steps (Δ = %.6f).\n", step, diff);
             break;
         }
         current_step = step;

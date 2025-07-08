@@ -1,9 +1,8 @@
 #include "../01-graph/graph.h"
 #include <stdlib.h>
-#include <time.h>
-#include "../11-helpers/get_urandom.h"  // Add this include
+#include "../11-helpers/get_urandom.h"  // random float in [min, max)
 
-// Helper: get degree of node (out-degree for directed)
+// Helper: get out-degree of node (for directed, else degree)
 static int get_degree(graph* g, int node) {
     int degree = 0;
     int n = g->num_nodes;
@@ -13,7 +12,7 @@ static int get_degree(graph* g, int node) {
     return degree;
 }
 
-// Check if 'val' is already in 'arr' with length 'len'
+// Check if 'val' is in 'arr' of length 'len'
 static int contains(int* arr, int len, int val) {
     for (int i = 0; i < len; i++) {
         if (arr[i] == val) return 1;
@@ -21,11 +20,13 @@ static int contains(int* arr, int len, int val) {
     return 0;
 }
 
+// Erdős-Rényi random graph
 graph* generate_erdos_renyi(int n, float p, int is_directed) {
     graph* g = create_graph(n, is_directed);
     if (!g) return NULL;
 
     for (int u = 0; u < n; u++) {
+        // if directed, v starts from 0; else avoid double edges by v > u
         for (int v = is_directed ? 0 : u + 1; v < n; v++) {
             if (u != v && get_urandom(0.0f, 1.0f) < p) {
                 add_edge(g, u, v, 1.0f);
@@ -36,15 +37,16 @@ graph* generate_erdos_renyi(int n, float p, int is_directed) {
     return g;
 }
 
-graph* generate_small_world(int n, int k, float beta, int is_directed) {
-    if (k % 2 != 0) return NULL;
-
+// Watts-Strogatz small-world model
+// k must be even
+graph* generate_watts_strogatz(int n, int k, float beta, int is_directed) {
+    if (k % 2 != 0) return NULL;  // k must be even
     graph* g = create_graph(n, is_directed);
     if (!g) return NULL;
 
     int half_k = k / 2;
 
-    // Create ring lattice
+    // Step 1: Ring lattice
     for (int u = 0; u < n; u++) {
         for (int i = 1; i <= half_k; i++) {
             int v = (u + i) % n;
@@ -53,12 +55,12 @@ graph* generate_small_world(int n, int k, float beta, int is_directed) {
         }
     }
 
-    // Rewire edges
+    // Step 2: Rewiring edges with probability beta
     for (int u = 0; u < n; u++) {
         for (int i = 1; i <= half_k; i++) {
             int v = (u + i) % n;
             if (is_connected(g, u, v) && get_urandom(0.0f, 1.0f) < beta) {
-                // Remove original edge
+                // Remove original edge(s)
                 g->edges[u * n + v] = 0;
                 g->edge_weights[u * n + v] = 0.0f;
                 if (!is_directed) {
@@ -66,7 +68,7 @@ graph* generate_small_world(int n, int k, float beta, int is_directed) {
                     g->edge_weights[v * n + u] = 0.0f;
                 }
 
-                // Find new random connection
+                // Find new random node for rewiring
                 int new_v;
                 do {
                     new_v = (int)get_urandom(0, (float)n);
@@ -77,18 +79,19 @@ graph* generate_small_world(int n, int k, float beta, int is_directed) {
             }
         }
     }
-
     return g;
 }
 
-graph* generate_scale_free(int n, int m, int is_directed) {
+// Barabási-Albert scale-free model
+graph* generate_barabasi_albert(int n, int m, int is_directed) {
     if (m < 1 || m >= n) return NULL;
 
     graph* g = create_graph(n, is_directed);
     if (!g) return NULL;
 
-    // Initialize with m+1 fully connected nodes
-    int m0 = m + 1;
+    int m0 = m + 1; // initial fully connected nodes count
+
+    // Step 1: Fully connect initial m0 nodes
     for (int u = 0; u < m0; u++) {
         for (int v = u + 1; v < m0; v++) {
             add_edge(g, u, v, 1.0f);
@@ -96,7 +99,7 @@ graph* generate_scale_free(int n, int m, int is_directed) {
         }
     }
 
-    // Add remaining nodes with preferential attachment
+    // Step 2: Add new nodes with preferential attachment
     for (int new_node = m0; new_node < n; new_node++) {
         int* targets = malloc(m * sizeof(int));
         if (!targets) {
@@ -104,6 +107,7 @@ graph* generate_scale_free(int n, int m, int is_directed) {
             return NULL;
         }
 
+        // Calculate total degree for probability distribution
         int total_degree = 0;
         for (int i = 0; i < new_node; i++) {
             total_degree += get_degree(g, i);
@@ -122,14 +126,13 @@ graph* generate_scale_free(int n, int m, int is_directed) {
                 }
             }
 
-            // Only add if not duplicate
             if (selected != -1 && !contains(targets, count, selected)) {
                 targets[count++] = selected;
             }
-            // else pick again
+            // else repeat pick
         }
 
-        // Connect new node to targets
+        // Add edges from new node to selected targets
         for (int j = 0; j < m; j++) {
             int target = targets[j];
             if (!is_connected(g, new_node, target)) {
@@ -137,9 +140,7 @@ graph* generate_scale_free(int n, int m, int is_directed) {
                 if (!is_directed) add_edge(g, target, new_node, 1.0f);
             }
         }
-
         free(targets);
     }
-
     return g;
 }

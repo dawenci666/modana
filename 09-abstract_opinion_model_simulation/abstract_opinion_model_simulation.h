@@ -16,4 +16,4 @@
     #define mkdir_safe(path) mkdir(path, 0755)
 #endif
 
-int run_simulation(opinion_model *model, size_t max_steps, float convergence_threshold, const char* directoryname);
+int run_simulation(opinion_model *model, size_t max_steps, float convergence_threshold, const char* directoryname, int save_data);
