@@ -12,7 +12,7 @@
 
 #define WIDTH 1920
 #define HEIGHT 1080
-#define NODE_RADIUS 30
+#define NODE_RADIUS 50
 #define MAX_PLACEMENT_ATTEMPTS 1000
 
 // RGB color struct
@@ -58,4 +58,20 @@ int load_layout_from_path(const char *path, VisNode **layout_ptr, size_t n);
  */
 void save_graph_as_image(graph *g, RGBColor *colors, const char *filename, char **labels,
                          VisNode *layout);
+
+/**
+ * Compute a spring layout for the graph.
+ * If prev_layout is NULL, start from random positions.
+ * Otherwise, start from prev_layout positions for smoother transitions.
+ * Returns a newly allocated VisNode array with positions.
+ */
+//VisNode* compute_spring_layout(graph *g, VisNode *prev_layout, int num_iters, float width, float height);
+
+/**
+ * Save the graph visualization as a PNG image using a spring layout.
+ * prev_layout can be NULL to start fresh.
+ * The function computes the spring layout internally.
+ */
+//void spring_save_graph_as_image(graph *g, RGBColor *colors, const char *filename,char **labels, VisNode *prev_layout);
+
 #endif // GRAPH_VISUALIZATION_H

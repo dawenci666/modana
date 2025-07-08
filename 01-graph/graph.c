@@ -2,6 +2,42 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include<math.h>
+#define INF 1e9f
+
+float* compute_all_pairs_distances(graph* g) {
+    int n = g->num_nodes;
+    float* dist = malloc(n * n * sizeof(float));
+    if (!dist) return NULL;
+
+    // Initialize distances:
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                dist[i * n + j] = 0.0f;
+            } else if (g->edges[i * n + j] == 1) {
+                dist[i * n + j] = g->edge_weights[i*n+j];
+            } else {
+                dist[i * n + j] = INF;
+            }
+        }
+    }
+
+    // Floyd-Warshall Algorithm
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                float alt = dist[i * n + k] + dist[k * n + j];
+                if (alt < dist[i * n + j]) {
+                    dist[i * n + j] = alt;
+                }
+            }
+        }
+    }
+
+    return dist; // Caller must free!
+}
+
 
 graph* create_graph(int n, int is_directed) {
     graph* g = malloc(sizeof(graph));
@@ -84,4 +120,44 @@ void save_graph(graph* g, char* filename){
         }
     }
     fclose(file);
+}
+
+int* bfs_cluster(int start, int n, float* distances, float* opinions, int* visited, float dist_thresh, float op_thresh) {
+    int* cluster = malloc(n * sizeof(int));
+    int front = 0, back = 0;
+    cluster[back++] = start;
+    visited[start] = 1;
+
+    while (front < back) {
+        int u = cluster[front++];
+        for (int v = 0; v < n; v++) {
+            if (visited[v]) continue;
+            float d = distances[u * n + v];
+            float o_diff = fabsf(opinions[u] - opinions[v]);
+            if (d < dist_thresh && o_diff < op_thresh) {
+                visited[v] = 1;
+                cluster[back++] = v;
+            }
+        }
+    }
+
+    // Resize and return
+    cluster[back] = -1;  // sentinel
+    return cluster;
+}
+
+int count_opinion_clusters(float* distances, float* opinions, int n, float dist_thresh, float op_thresh) {
+    int* visited = calloc(n, sizeof(int));
+    int num_clusters = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (!visited[i]) {
+            int* cluster = bfs_cluster(i, n, distances, opinions, visited, dist_thresh, op_thresh);
+            free(cluster);
+            num_clusters++;
+        }
+    }
+
+    free(visited);
+    return num_clusters;
 }

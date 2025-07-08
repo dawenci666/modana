@@ -18,18 +18,19 @@
 #include "11-helpers/get_urandom.h"
 
 int main(void) {
-    graph* g2 = generate_small_world(100, 2, 0.2, 0);
-    opinion_model* sim = create_si_async_mult_model(g2, 2, 1, NULL);
+    srand(time(NULL));
+    graph* g2 = generate_erdos_renyi(30, 0.3, 0);
+
+    opinion_model* sim = create_si_async_temporal(g2, 2, 1);
     if (sim == NULL) {
         printf("Failed to create model\n");
         return 1;
     }
 
     char* outdir = create_dir_with_curr_timestamp("simls_raw_data");
-    int step_count = run_simulation(sim, 10000, 0.001, outdir);
-
-    // Allocate VisNode array for layout
-    /*VisNode* layout = malloc(g2->num_nodes * sizeof(VisNode));
+    int step_count = run_simulation(sim, 1000, 0.001, outdir);
+    if(step_count<999){
+            VisNode* layout = malloc(g2->num_nodes * sizeof(VisNode));
     if (!layout) {
         printf("Failed to allocate layout\n");
         free_model(sim);
@@ -75,11 +76,15 @@ int main(void) {
             g2->num_nodes
         );
     }
-    free(layout);*/
+    free(layout);
+    generate_video_from_images(outdir, NULL, 5);
+
+    }
+    free_opinion_space(sim->opinion_space);
+    free_params(sim);
     free_model(sim);
     free_graph(g2);
-    //generate_video_from_images(outdir, NULL, 5);
     free(outdir);
-        close_urandom();
+    close_urandom();
     return 0;
 }

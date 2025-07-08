@@ -1,6 +1,7 @@
 // get_urandom.c
 #include "get_urandom.h"
-
+#include<stdlib.h>
+#include<time.h>
 static int urandom_fd = -1;
 
 static int open_urandom() {
@@ -15,6 +16,11 @@ static int open_urandom() {
 }
 
 float get_urandom(float min, float max) {
+    float normalized = (float)rand() / (float)RAND_MAX;
+    return min + normalized * (max - min);
+}
+
+/*float get_urandom(float min, float max) {
     if (open_urandom() == -1) {
         return 0.0f;  // fallback on error
     }
@@ -29,7 +35,7 @@ float get_urandom(float min, float max) {
     float normalized = (float)rand_val / (float)UINT32_MAX;
     return min + normalized * (max - min);
 }
-
+*/
 void close_urandom() {
     if (urandom_fd != -1) {
         close(urandom_fd);
