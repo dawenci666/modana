@@ -12,6 +12,7 @@
  * @param video_filename Output video filename. If NULL, defaults to "animation.mp4" inside directoryname.
  * @param fps Frames per second for the video. If <= 0, defaults to 3.
  */
-void generate_video_from_images(const char *directoryname, const char *video_filename, int fps);
+void generate_video_from_images(const char *directoryname,
+				const char *video_filename, int fps);
 
-#endif /* VIDEO_GENERATOR_H */
+#endif				/* VIDEO_GENERATOR_H */

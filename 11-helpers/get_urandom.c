@@ -4,20 +4,22 @@
 #include<time.h>
 static int urandom_fd = -1;
 
-static int open_urandom() {
-    if (urandom_fd == -1) {
-        urandom_fd = open("/dev/urandom", O_RDONLY);
-        if (urandom_fd == -1) {
-            perror("open /dev/urandom");
-            return -1;
-        }
-    }
-    return 0;
+static int open_urandom()
+{
+	if (urandom_fd == -1) {
+		urandom_fd = open("/dev/urandom", O_RDONLY);
+		if (urandom_fd == -1) {
+			perror("open /dev/urandom");
+			return -1;
+		}
+	}
+	return 0;
 }
 
-float get_urandom(float min, float max) {
-    float normalized = (float)rand() / (float)RAND_MAX;
-    return min + normalized * (max - min);
+float get_urandom(float min, float max)
+{
+	float normalized = (float)rand() / (float)RAND_MAX;
+	return min + normalized * (max - min);
 }
 
 /*float get_urandom(float min, float max) {
@@ -36,9 +38,10 @@ float get_urandom(float min, float max) {
     return min + normalized * (max - min);
 }
 */
-void close_urandom() {
-    if (urandom_fd != -1) {
-        close(urandom_fd);
-        urandom_fd = -1;
-    }
+void close_urandom()
+{
+	if (urandom_fd != -1) {
+		close(urandom_fd);
+		urandom_fd = -1;
+	}
 }

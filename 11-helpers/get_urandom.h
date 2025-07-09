@@ -13,4 +13,4 @@ float get_urandom(float min, float max);
 // Call this when you are done using get_urandom to avoid resource leaks.
 void close_urandom();
 
-#endif // GET_URANDOM_H
+#endif				// GET_URANDOM_H
