@@ -117,8 +117,8 @@ void consensus_time_vs_nodes(int runs) {
             sprintf(outdir_er, "%s/er=0.3,%d,0_sim=er,2,1_run%d", base_dir, nnodes, run);
             ensure_dir_exists(outdir_er);
 
-            opinion_model* sim_er = create_si_async_mult_model(er, 2, 1);
-            int er_time = run_simulation(sim_er, 30000, 0.001, outdir_er,0);
+            opinion_model* sim_er = create_si_async_temporal(er, 2, 1);
+            int er_time = run_simulation(sim_er, 2000, 0.001, outdir_er,0);
             if (er_time < 999) {
                 er_sum += (float)er_time;
                 counted_runs_er++;
@@ -139,7 +139,7 @@ void consensus_time_vs_nodes(int runs) {
             ensure_dir_exists(outdir_ws);
 
             opinion_model* sim_ws = create_si_async_temporal(ws, 2, 1);
-            int ws_time = run_simulation(sim_ws, 30000, 0.001, outdir_ws,0);
+            int ws_time = run_simulation(sim_ws, 2000, 0.001, outdir_ws,0);
             if (ws_time < 999) {
                 ws_sum += (float)ws_time;
                 counted_runs_ws++;
@@ -158,7 +158,7 @@ void consensus_time_vs_nodes(int runs) {
             ensure_dir_exists(outdir_ba);
 
             opinion_model* sim_ba = create_si_async_temporal(ba, 2, 1);
-            int ba_time = run_simulation(sim_ba, 30000, 0.001, outdir_ba,0);
+            int ba_time = run_simulation(sim_ba, 2000, 0.001, outdir_ba,0);
             if (ba_time < 999) {
                 ba_sum += (float)ba_time;
                 counted_runs_ba++;
@@ -222,56 +222,33 @@ cleanup:
 
 int main(void) {
     srand(time(NULL));
-    consensus_time_vs_nodes(10);
-    /*graph* g2 = generate_erdos_renyi(30, 0.3, 0);
-
+    //consensus_time_vs_nodes(10);
+    graph* g2 = generate_erdos_renyi(30, 0.3, 0);
     opinion_model* sim = create_si_async_temporal(g2, 2, 1);
     if (sim == NULL) {
         printf("Failed to create model\n");
         return 1;
     }
-
     char* outdir = create_dir_with_curr_timestamp("simls_raw_data");
-    int step_count = run_simulation(sim, 1000, 0.001, outdir);
+    save_graph(g2,"./curr_og.graph");
+    int step_count = run_simulation(sim, 10000, 0.001, outdir,1);
+    size_t len = strlen(outdir) + strlen("/graph.layout") + 1;
+    char *layout_path = malloc(len);
+
+    snprintf(layout_path, len, "%s/graph.layout", outdir);
     if(step_count<999){
-            VisNode* layout = malloc(g2->num_nodes * sizeof(VisNode));
-    if (!layout) {
-        printf("Failed to allocate layout\n");
-        free_model(sim);
-        free_graph(g2);
-        free(outdir);
-        return 1;
-    }
-    assign_random_layout(layout, g2->num_nodes);
-        close_urandom();
-    char layout_path[256];
-    strcpy(layout_path,outdir);
-    strcat(layout_path,"/graph.layout");
-    if (!save_layout_to_path(layout_path, layout, g2->num_nodes)) {
-        printf("Failed to save layout\n");
-        free(layout);
-        free_model(sim);
-        free_graph(g2);
-        free(outdir);
-        return 1;
-    }
-
-    // Create images directory inside outdir
-    char images_dir[512];
-    snprintf(images_dir, sizeof(images_dir), "%s/images", outdir);
-    mkdir(images_dir, 0755);
-
-    for (int i = 0; i <= step_count; i++) {
+        char images_dir[512];
+        snprintf(images_dir, sizeof(images_dir), "%s/images", outdir);
+        mkdir(images_dir, 0755);
+        for (int i = 0; i <= step_count; i++) {
         printf("\rGenerating picture %d/%d", i, step_count);
         fflush(stdout);
         char graph_path[512];
         char opinion_path[512];
         char img_path[512];
-
         snprintf(graph_path, sizeof(graph_path), "%s/%d.graph", outdir, i);
         snprintf(opinion_path, sizeof(opinion_path), "%s/%d.opinions", outdir, i);
         snprintf(img_path, sizeof(img_path), "%s/%04d.png", images_dir, i);
-
         save_image_as_graph_wopinion_labels_and_colors(
             graph_path,
             opinion_path,
@@ -279,16 +256,14 @@ int main(void) {
             layout_path,
             g2->num_nodes
         );
+        }
     }
-    free(layout);
     generate_video_from_images(outdir, NULL, 20);
-
-    }
     free_opinion_space(sim->opinion_space);
     free_params(sim);
     free_model(sim);
     free_graph(g2);
     free(outdir);
-    close_urandom();*/
+    close_urandom();
     return 0;
 }

@@ -1,0 +1,94 @@
+Realistic Opinion-Driven Edge Weight Dynamics (Edge weight + Opinions only)
+Core principles:
+
+    Tie Strength Reflects Relationship Intensity
+    Edge weight = strength of social tie; stronger ties mean more frequent contact, trust, influence.
+
+    Homophily Reinforces Ties
+    When opinions are similar, the tie strengthens (people bond more).
+
+    Disagreement Weakens Ties
+    Sustained opinion differences gradually weaken the relationship.
+
+    Tie Decay and Maintenance
+    Even if opinions stay stable, ties decay slowly over time without “interaction” (modeled implicitly).
+
+    New Ties Form Based on Opinion Proximity
+    Agents probabilistically form new connections to similar others.
+
+Update Logic (Per time step for each edge (i,j)(i,j)):
+
+    Compute opinion difference:
+    d=∣oi−oj∣
+    d=∣oi​−oj​∣
+
+    Tie reinforcement (if similar):
+    If d≤τd≤τ (similar opinions threshold),
+    wt+1=wt+r×(1−d)×(1−wt)
+    wt+1​=wt​+r×(1−d)×(1−wt​)
+
+    where:
+
+        rr is a reinforcement rate (small, e.g., 0.05)
+
+        (1−d)(1−d) scales reinforcement by closeness
+
+        (1−wt)(1−wt​) limits growth as weight approaches max (1)
+
+    Tie weakening (if dissimilar):
+    If d>τd>τ,
+    wt+1=wt−s×d×wt
+    wt+1​=wt​−s×d×wt​
+
+    where:
+
+        ss is a weakening rate (small, e.g., 0.03)
+
+        dd scales weakening by opinion difference
+
+        wtwt​ means stronger ties weaken more slowly (inertia)
+
+    Baseline decay (tie forgetting):
+    Regardless of opinions, apply slow decay to model fading without active reinforcement:
+    wt+1=wt+1×(1−δ)
+    wt+1​=wt+1​×(1−δ)
+
+    where δδ is a small decay rate (e.g., 0.01)
+
+    New tie formation (if no edge exists):
+    Probability to form new tie between i,ji,j based on opinion similarity:
+    Padd=exp⁡(−κ×d)
+    Padd​=exp(−κ×d)
+
+    With chance PaddPadd​, set:
+    wt+1=winit
+    wt+1​=winit​
+
+    where winitwinit​ is initial tie strength (e.g., 0.3)
+
+    Edge removal:
+    If wt+1wt+1​ falls below a threshold wminwmin​ (e.g., 0.05), remove the edge.
+
+Why this is realistic?
+
+    Non-linear strengthening slows as ties get stronger — mirrors relationship saturation.
+
+    Weakening depends on opinion gap and current strength, capturing resilience of strong ties.
+
+    Baseline decay models natural forgetting if ties are not reinforced.
+
+    Tie formation probability falls off exponentially with opinion difference, matching homophily and exploration.
+
+    Tie removal threshold mimics social tie “death.”
+
+Social interpretation:
+
+    Friends with similar views grow closer, reinforcing bonds.
+
+    Disagreement weakens relationships but strong bonds resist quick decay.
+
+    Relationships fade slowly without interaction, even if opinions stay aligned.
+
+    New social ties form preferentially with like-minded individuals but some randomness remains.
+
+    Network topology and tie strengths evolve smoothly over time, allowing clusters, bridges, and gradual shifts — very close to real social dynamics.
